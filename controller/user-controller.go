@@ -8,7 +8,7 @@ import (
 
 type UserController interface {
 	FindAll() []entity.User
-	Create(ctx *gin.Context) entity.User
+	Create(ctx *gin.Context) error
 }
 
 type controller struct {
@@ -25,10 +25,13 @@ func (c *controller) FindAll() []entity.User {
 	return c.service.FindAll()
 }
 
-func (c *controller) Create(ctx *gin.Context) entity.User {
+func (c *controller) Create(ctx *gin.Context) error {
 	var user entity.User
-	ctx.BindJSON(&user)
+	//err := ctx.BindJSON(&user)
+	if err := ctx.ShouldBindJSON(&user); err != nil {
+	 	return err
+	 	}
 	c.service.Create(user)
-	return user
+	return nil
 
 }

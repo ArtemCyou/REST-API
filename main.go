@@ -122,7 +122,13 @@ func main() {
 		c.JSON(200, userController.FindAll())
 	})
 	router.POST("/users", func(c *gin.Context) {
-		c.JSON(http.StatusOK, userController.Create(c))
+		err:= userController.Create(c)
+		if err!=nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error:": err.Error()})
+		} else {
+			c.JSON(http.StatusOK, gin.H{"status:": "User input is valid!"})
+		}
+
 	})
 
 	//router.GET("/authorization", getToken)     //принимает логин и пароль
