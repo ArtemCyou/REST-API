@@ -9,3 +9,9 @@
 [GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
 Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
 [GIN-debug] Listening and serving HTTP on localhost: 8080
+127.0.0.1 - 25 Dec 21 21:54 MSK [GET] /users %!s(int=401) 22600 %!s(MISSING)
+127.0.0.1 - 25 Dec 21 21:56 MSK [GET] /users %!s(int=200) 1037600 %!s(MISSING)
+127.0.0.1 - 25 Dec 21 22:06 MSK [GET] /users %!s(int=200) 713300 %!s(MISSING)
+127.0.0.1 - 25 Dec 21 22:07 MSK [POST] /users %!s(int=401) 0 %!s(MISSING)
+127.0.0.1 - 25 Dec 21 22:07 MSK [POST] /users %!s(int=200) 1025600 %!s(MISSING)
+127.0.0.1 - 25 Dec 21 22:07 MSK [GET] /users %!s(int=200) 0 %!s(MISSING)
