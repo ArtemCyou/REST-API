@@ -48,8 +48,9 @@ var auth = []auditAuthruzation{
 var (
 	userService     service.UserService        = service.New()
 	userController  controller.UserController  = controller.New(userService)
+	jwtService service.JWTService = service.NewJWTService()
 	loginService    service.LoginService       = service.NewLoginService()
-	loginController controller.LoginController = controller.NewLoginController(loginService)
+	loginController controller.LoginController = controller.NewLoginController(loginService, jwtService)
 )
 
 //авторизация. принимает логин, пароль отдает токен

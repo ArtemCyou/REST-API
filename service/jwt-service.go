@@ -8,13 +8,13 @@ import (
 )
 
 type JWTService interface {
-	GenerateToken(name, password string) string
+	GenerateToken(name  string, user bool) string
 	ValidateToken(tokenString string) (*jwt.Token, error)
 }
 // jwtCustomClaims are custom claims extending default ones.
 type jwtCustomClaims struct {
-	Name     string `json:"name"`
-	Password string `json:"password"`
+	Name string `json:"name"`
+	User bool `json:"user"`
 	jwt.StandardClaims
 }
 
@@ -38,11 +38,11 @@ func getSecretKey() string {
 	return secret
 }
 
-func (j *jwtService) GenerateToken(name, password string) string  {
+func (j *jwtService) GenerateToken(name  string, user bool) string  {
 //Set custom and standard claims
 	claims:= &jwtCustomClaims{
 		name,
-		password,
+		user,
 		jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour*48).Unix(),
 			Issuer: j.issuer,
@@ -60,8 +60,8 @@ func (j *jwtService) GenerateToken(name, password string) string  {
 	return t
 }
 
-func (j *jwtService)ValidateToken(token string) (*jwt.Token, error)  {
-	return jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+func (j *jwtService)ValidateToken(tokenString string) (*jwt.Token, error)  {
+	return jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		//signing method validation
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC);!ok{
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
