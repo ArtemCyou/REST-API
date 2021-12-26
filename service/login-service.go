@@ -9,13 +9,16 @@ type loginService struct {
 	authorizationPassword string
 }
 
-func NewLoginService()LoginService  {
+func NewLoginService() LoginService {
 	return &loginService{
 		authorizationUsername: "cherbis",
 		authorizationPassword: "1234",
 	}
 }
 
-func (l *loginService)Login(username, password string) bool  {
-return l.authorizationUsername ==username && l.authorizationPassword==password
+func (l *loginService) Login(username, password string) bool {
+	return l.authorizationUsername == username &&
+		l.authorizationPassword == password
 }
+
+

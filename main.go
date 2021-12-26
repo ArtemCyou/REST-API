@@ -12,6 +12,7 @@ import (
 	_ "github.com/lib/pq"
 	"net/http"
 )
+
 //user struct
 //type user struct {
 //	ID       int    `json:"id" binding:"serial primary key"`
@@ -36,7 +37,7 @@ type session struct {
 
 //аудит авторизации
 type auditAuthruzation struct {
-	Name  string      `json:"name"`
+	Name  string    `json:"name"`
 	Time  time.Time `json:"time"`
 	Event string    `json:"event"`
 }
@@ -45,8 +46,10 @@ var auth = []auditAuthruzation{
 	//{Name: user{Login: "root"}, Time: '15', Event: "authorization"},
 }
 var (
-	userService service.UserService = service.New()
-	userController controller.UserController = controller.New(userService)
+	userService     service.UserService        = service.New()
+	userController  controller.UserController  = controller.New(userService)
+	loginService    service.LoginService       = service.NewLoginService()
+	loginController controller.LoginController = controller.NewLoginController(loginService)
 )
 
 //авторизация. принимает логин, пароль отдает токен
@@ -109,21 +112,44 @@ func cleanAudit(c *gin.Context) {
 
 }
 
-func setupLogOutput()  {
-	f,_:= os.Create("ginOUT.txt")
+func setupLogOutput() {
+	f, _ := os.Create("ginOUT.txt")
 	gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
 }
 func main() {
 	setupLogOutput()
 	router := gin.New()
-	router.Use(gin.Recovery(),middlewares.Logger(), middlewares.BasicAuth())
+	router.Use(gin.Recovery(), middlewares.Logger())
+	//middlewares.BasicAuth()
+
+	// Login Endpoint: Authentication + Token creation
+	router.POST("/login", func(c *gin.Context) {
+		token := loginController.Login(c)
+		if token != "" {
+			c.JSON(http.StatusOK, gin.H{
+				"token": token,
+			})
+		} else {
+			c.JSON(http.StatusUnauthorized, nil)
+		}
+	})
+
+	// JWT Authorization Middleware applies to "/api" only.
+	apiRoutes:= router.Group("/api", middlewares.AuthorizeJWT())
+	{
+		apiRoutes.GET("/test", func(c *gin.Context){
+			c.JSON(http.StatusOK, gin.H{"status":"good auth user"})
+		})
+	}
+
 
 	router.GET("/users", func(c *gin.Context) {
 		c.JSON(200, userController.FindAll())
 	})
+
 	router.POST("/users", func(c *gin.Context) {
-		err:= userController.Create(c)
-		if err!=nil {
+		err := userController.Create(c)
+		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error:": err.Error()})
 		} else {
 			c.JSON(http.StatusOK, gin.H{"status:": "User input is valid!"})
