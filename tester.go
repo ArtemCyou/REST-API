@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 )
 
-func main() {
+func tested() {
 
 	url := "http://localhost:8080/users"
 	method := "GET"

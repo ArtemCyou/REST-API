@@ -1,8 +1,8 @@
 package entity
 
 type User struct {
-	//ID       int    `json:"id" binding:"serial primary key"`
-	Login    string `json:"login" binding:"required"`
-	Password string `json:"password" binding:"required"`
-	BadEntry int    `json:"bad_entry" binding:"required"`
+	ID       uint64 `gorm:"primary_key;auto_increment" json:"id"`
+	Login    string `json:"login" binding:"required" gorm:"type:varchar(32)"`
+	Password string `json:"password" binding:"required" gorm:"type:varchar(32)"`
+	BadEntry int8    `json:"bad_entry" binding:"required,gte=1,gte=5"`
 }

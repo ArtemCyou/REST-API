@@ -13,27 +13,11 @@ import (
 	"net/http"
 )
 
-//user struct
-//type user struct {
-//	ID       int    `json:"id" binding:"serial primary key"`
-//	Login    string `json:"login" binding:"required"`
-//	Password string `json:"password" binding:"required"`
-//	BadEntry int    `json:"bad_entry" binding:"required"`
-//}
-
-//var users = []user{
-//	{Login: "root", Password: "4334384334", BadEntry: 0},
-//}
-
 //условная структура будет реализованна на jwt
 type session struct {
 	Token    *string   `json:"token"`
 	TimeLive time.Time `json:"time_live"`
 }
-
-//var sessions = []session{
-//	//{Token: "665464", TimeLive: '' },
-//}
 
 //аудит авторизации
 type auditAuthruzation struct {
@@ -42,13 +26,10 @@ type auditAuthruzation struct {
 	Event string    `json:"event"`
 }
 
-var auth = []auditAuthruzation{
-	//{Name: user{Login: "root"}, Time: '15', Event: "authorization"},
-}
 var (
 	userService     service.UserService        = service.New()
 	userController  controller.UserController  = controller.New(userService)
-	jwtService service.JWTService = service.NewJWTService()
+	jwtService      service.JWTService         = service.NewJWTService()
 	loginService    service.LoginService       = service.NewLoginService()
 	loginController controller.LoginController = controller.NewLoginController(loginService, jwtService)
 )
@@ -136,13 +117,12 @@ func main() {
 	})
 
 	// JWT Authorization Middleware applies to "/api" only.
-	apiRoutes:= router.Group("/api", middlewares.AuthorizeJWT())
+	apiRoutes := router.Group("/api", middlewares.AuthorizeJWT())
 	{
-		apiRoutes.GET("/test", func(c *gin.Context){
-			c.JSON(http.StatusOK, gin.H{"status":"good auth user"})
+		apiRoutes.GET("/test", func(c *gin.Context) {
+			c.JSON(http.StatusOK, gin.H{"status": "good auth user"})
 		})
 	}
-
 
 	router.GET("/users", func(c *gin.Context) {
 		c.JSON(200, userController.FindAll())
@@ -158,9 +138,6 @@ func main() {
 
 	})
 
-	//router.GET("/authorization", getToken)     //принимает логин и пароль
-	router.GET("/users/:token", getHistAuth)   //json история авторизации
-	router.DELETE("/users/:token", cleanAudit) //удаляет историю авторизации
 	router.Run("localhost: 8080")
 
 }

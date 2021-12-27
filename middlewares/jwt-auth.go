@@ -13,7 +13,7 @@ import (
 func AuthorizeJWT()gin.HandlerFunc  {
 	return func(c *gin.Context) {
 		const BEARER_SCHEMA = "Bearer "
-		authHeader := c.GetHeader("Authorization")
+		authHeader := c.GetHeader("X-Token")
 		tokenString:= authHeader[len(BEARER_SCHEMA):]
 
 		token, err := service.NewJWTService().ValidateToken(tokenString)
@@ -28,6 +28,7 @@ func AuthorizeJWT()gin.HandlerFunc  {
 		} else {
 			log.Println(err)
 			c.AbortWithStatus(http.StatusUnauthorized)
+			c.JSON(http.StatusUnauthorized, gin.H{"error":"invalid token"})
 		}
 	}
 }
