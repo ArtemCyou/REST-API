@@ -11,6 +11,7 @@ type UserRepository interface {
 	Delete(user entity.User)
 	FindAll() []entity.User
 	CloseDB()
+	GetDB() *gorm.DB
 }
 
 type database struct {
@@ -58,4 +59,10 @@ func (db *database) FindAll() []entity.User {
 	db.connection.Find(&users)
 	return users
 }
+
+
+func (db *database)GetDB() *gorm.DB {
+return db.connection
+}
+
 

@@ -1,8 +1,10 @@
 package main
 
 import (
-	"example/REST-API-APREL/cntl"
+	"example/REST-API-APREL/controller"
 	"example/REST-API-APREL/middlewares"
+	"example/REST-API-APREL/repository"
+	"example/REST-API-APREL/service"
 	"github.com/gin-gonic/gin"
 	"io"
 	"os"
@@ -11,14 +13,14 @@ import (
 	"net/http"
 )
 
-//var (
-//	userRepository  repository.UserRepository  = repository.NewUserRepository()
-//	userService     service.UserService        = service.New(userRepository)
-//	userController  controller.UserController  = controller.New(userService)
-//	jwtService      service.JWTService         = service.NewJWTService()
-//	loginService    service.LoginService       = service.NewLoginService()
-//	loginController controller.LoginController = controller.NewLoginController(loginService, jwtService)
-//)
+var (
+	userRepository  repository.UserRepository  = repository.NewUserRepository()
+	userService     service.UserService        = service.New(userRepository)
+	userController  controller.UserController  = controller.New(userService)
+	jwtService      service.JWTService         = service.NewJWTService()
+	loginService    service.LoginService       = service.NewLoginService()
+	loginController controller.LoginController = controller.NewLoginController(loginService, jwtService)
+)
 
 //авторизация. принимает логин, пароль отдает токен
 
@@ -73,7 +75,7 @@ func setupLogOutput() {
 	gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
 }
 func main() {
-	defer cntl.UserRepository.CloseDB() //userRepository.CloseDB()
+	defer userRepository.CloseDB()
 	setupLogOutput()
 
 	router := gin.New()
@@ -82,7 +84,7 @@ func main() {
 
 	// Login Endpoint: Authentication + Token creation
 	router.POST("/login", func(c *gin.Context) {
-		token := cntl.LoginController.Login(c) //loginController.Login(c)
+		token := loginController.Login(c)
 		if token != "" {
 			c.JSON(http.StatusOK, gin.H{
 				"token": token,
@@ -101,13 +103,13 @@ func main() {
 	}
 
 	router.GET("/users", func(c *gin.Context) {
-		c.JSON(200,cntl.UserController.FindAll())
-		//c.JSON(200, userController.FindAll())
+		//c.JSON(200,cntl.UserController.FindAll())
+		c.JSON(200, userController.FindAll())
 	})
 
 	router.POST("/users", func(c *gin.Context) {
-		err:=cntl.UserController.Create(c)
-		//err := userController.Create(c)
+		//err:=cntl.UserController.Create(c)
+		err := userController.Create(c)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error:": err.Error()})
 		} else {
@@ -116,8 +118,8 @@ func main() {
 	})
 
 	router.DELETE("/users/:id", func(c *gin.Context) {
-		err:=cntl.UserController.Delete(c)
-		//err := userController.Delete(c)
+		//err:=cntl.UserController.Delete(c)
+		err := userController.Delete(c)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error:": err.Error()})
 		} else {
