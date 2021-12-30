@@ -7,7 +7,7 @@ import (
 )
 
 type UserRepository interface {
-	Creates(user entity.User)
+	Create(user entity.User)
 	Delete(user entity.User)
 	FindAll() []entity.User
 	CloseDB()
@@ -24,7 +24,7 @@ func NewUserRepository() UserRepository {
 		panic("failed connection database")
 	}
 
-	err = db.AutoMigrate(&entity.User{})
+	err = db.AutoMigrate(&entity.User{},&entity.Tokens{})
 	if err != nil {
 		panic("failed migrate database")
 	}
@@ -45,7 +45,7 @@ sql, err:= db.connection.DB()
 	}
 }
 
-func (db *database) Creates(user entity.User) {
+func (db *database) Create(user entity.User) {
 	db.connection.Create(&user)
 }
 

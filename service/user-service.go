@@ -1,26 +1,36 @@
 package service
 
-import "example/REST-API-APREL/entity"
+import (
+	"example/REST-API-APREL/entity"
+	"example/REST-API-APREL/repository"
+)
 
 type UserService interface {
 	FindAll()[]entity.User
+	Delete(user entity.User)
 	Create(user entity.User) entity.User
 
 }
 
 type userService struct {
-	users []entity.User
+	userRepository repository.UserRepository
 }
 
-func New() UserService {
-	return &userService{}
+func New(repo repository.UserRepository) UserService {
+	return &userService{
+		userRepository: repo,
+	}
 }
 
 func (u *userService)Create(user entity.User)entity.User  {
-u.users = append(u.users, user)
+u.userRepository.Create(user)
 return user
 }
 
+func (u *userService) Delete(user entity.User){
+	u.userRepository.Delete(user)
+}
+
 func (u *userService)FindAll() []entity.User  {
- return u.users
+ return u.userRepository.FindAll()
 }
