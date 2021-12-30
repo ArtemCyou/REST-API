@@ -17,8 +17,18 @@ func NewLoginService() LoginService {
 }
 
 func (l *loginService) Login(username, password string) bool {
+	//user := &loginService{}
+	//db:= repository.NewUserRepository()
+	//err := db.c Table("users").Where("login = ?", login).First(user).Error
+	//if err != nil {
+	//	if err == gorm.ErrRecordNotFound {
+	//		return false
+	//	}
+	//}
 	return l.authorizationUsername == username &&
 		l.authorizationPassword == password
 }
-
-
+//
+//func GetDB() *gorm.DB {
+//return db
+//}

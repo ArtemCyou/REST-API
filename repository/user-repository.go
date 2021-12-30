@@ -24,7 +24,7 @@ func NewUserRepository() UserRepository {
 		panic("failed connection database")
 	}
 
-	err = db.AutoMigrate(&entity.User{},&entity.Tokens{})
+	err = db.AutoMigrate(&entity.User{})
 	if err != nil {
 		panic("failed migrate database")
 	}
@@ -58,3 +58,4 @@ func (db *database) FindAll() []entity.User {
 	db.connection.Find(&users)
 	return users
 }
+

@@ -6,9 +6,11 @@
 [GIN-debug] GET    /api/test                 --> main.main.func2 (4 handlers)
 [GIN-debug] GET    /users                    --> main.main.func3 (3 handlers)
 [GIN-debug] POST   /users                    --> main.main.func4 (3 handlers)
-[GIN-debug] GET    /users/:token             --> main.getHistAuth (3 handlers)
-[GIN-debug] DELETE /users/:token             --> main.cleanAudit (3 handlers)
+[GIN-debug] DELETE /users/:id                --> main.main.func5 (3 handlers)
 [GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
 Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
 [GIN-debug] Listening and serving HTTP on localhost: 8080
-127.0.0.1 - 27 Dec 21 15:09 MSK [GET] /api/test %!s(int=200) 74526600 %!s(MISSING)
+127.0.0.1 - 30 Dec 21 21:36 MSK [POST] /users %!s(int=200) 6346100 %!s(MISSING)
+127.0.0.1 - 30 Dec 21 21:36 MSK [GET] /users %!s(int=200) 0 %!s(MISSING)
+127.0.0.1 - 30 Dec 21 21:36 MSK [DELETE] /users/3 %!s(int=200) 4030700 %!s(MISSING)
+127.0.0.1 - 30 Dec 21 21:37 MSK [GET] /users %!s(int=200) 948500 %!s(MISSING)

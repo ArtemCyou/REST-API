@@ -1,40 +1,24 @@
 package main
 
 import (
+	"example/REST-API-APREL/cntl"
 	"example/REST-API-APREL/middlewares"
-	"example/REST-API-APREL/controller"
-	"example/REST-API-APREL/repository"
-	"example/REST-API-APREL/service"
 	"github.com/gin-gonic/gin"
 	"io"
 	"os"
-	"time"
 	//"database/sql"
 	_ "github.com/lib/pq"
 	"net/http"
 )
 
-//условная структура будет реализованна на jwt
-type session struct {
-	Token    *string   `json:"token"`
-	TimeLive time.Time `json:"time_live"`
-}
-
-//аудит авторизации
-type auditAuthruzation struct {
-	Name  string    `json:"name"`
-	Time  time.Time `json:"time"`
-	Event string    `json:"event"`
-}
-
-var (
-	userRepository  repository.UserRepository  = repository.NewUserRepository()
-	userService     service.UserService        = service.New(userRepository)
-	userController  controller.UserController  = controller.New(userService)
-	jwtService      service.JWTService         = service.NewJWTService()
-	loginService    service.LoginService       = service.NewLoginService()
-	loginController controller.LoginController = controller.NewLoginController(loginService, jwtService)
-)
+//var (
+//	userRepository  repository.UserRepository  = repository.NewUserRepository()
+//	userService     service.UserService        = service.New(userRepository)
+//	userController  controller.UserController  = controller.New(userService)
+//	jwtService      service.JWTService         = service.NewJWTService()
+//	loginService    service.LoginService       = service.NewLoginService()
+//	loginController controller.LoginController = controller.NewLoginController(loginService, jwtService)
+//)
 
 //авторизация. принимает логин, пароль отдает токен
 
@@ -65,18 +49,6 @@ var (
 //	}
 //	c.JSON(http.StatusOK, gin.H{"status": "вы успешно авторизовались"})
 //}
-
-//история авторизации юзера. check token in bd. JSON: дата/время, событие.
-func getHistAuth(c *gin.Context) {
-	// get token
-	//...
-	//check token validation in sql
-	//...
-	//return
-	var session auditAuthruzation
-	c.IndentedJSON(http.StatusOK, session)
-}
-
 //удалить истории авторизации. check token in bd
 func cleanAudit(c *gin.Context) {
 	// get token
@@ -101,7 +73,7 @@ func setupLogOutput() {
 	gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
 }
 func main() {
-	defer userRepository.CloseDB()
+	defer cntl.UserRepository.CloseDB() //userRepository.CloseDB()
 	setupLogOutput()
 
 	router := gin.New()
@@ -110,7 +82,7 @@ func main() {
 
 	// Login Endpoint: Authentication + Token creation
 	router.POST("/login", func(c *gin.Context) {
-		token := loginController.Login(c)
+		token := cntl.LoginController.Login(c) //loginController.Login(c)
 		if token != "" {
 			c.JSON(http.StatusOK, gin.H{
 				"token": token,
@@ -129,27 +101,28 @@ func main() {
 	}
 
 	router.GET("/users", func(c *gin.Context) {
-		c.JSON(200, userController.FindAll())
+		c.JSON(200,cntl.UserController.FindAll())
+		//c.JSON(200, userController.FindAll())
 	})
 
 	router.POST("/users", func(c *gin.Context) {
-		err := userController.Create(c)
+		err:=cntl.UserController.Create(c)
+		//err := userController.Create(c)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error:": err.Error()})
 		} else {
 			c.JSON(http.StatusOK, gin.H{"status:": "User input is valid!"})
 		}
-
 	})
 
 	router.DELETE("/users/:id", func(c *gin.Context) {
-		err := userController.Delete(c)
+		err:=cntl.UserController.Delete(c)
+		//err := userController.Delete(c)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error:": err.Error()})
 		} else {
 			c.JSON(http.StatusOK, gin.H{"status:": "Users delete!"})
 		}
-
 	})
 	router.Run("localhost: 8080")
 
